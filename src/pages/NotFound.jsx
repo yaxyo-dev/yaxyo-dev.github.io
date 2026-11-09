@@ -10,12 +10,12 @@ export default function NotFound() {
 
   return (
     <main id="main" className="not-found wrap">
-      <TileWall text="404" className="not-found-wall" />
-      <h1>This page doesn’t exist.</h1>
+      <TileWall text="404" palette="hero" className="not-found-wall" />
+      <h1 className="display">This page doesn’t exist.</h1>
       <p lang="uz">Bunday sahifa yo‘q.</p>
       <div className="actions">
-        <Link className="button" to="/">Go to the home page</Link>
-        <Link className="text-link" to="/uz/" lang="uz">Bosh sahifaga o‘tish</Link>
+        <Link className="pill pill-solid" to="/">Go to the home page</Link>
+        <Link className="pill" to="/uz/" lang="uz">Bosh sahifaga o‘tish</Link>
       </div>
     </main>
   );

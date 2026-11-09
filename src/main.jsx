@@ -1,8 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
-import '@fontsource-variable/piazzolla';
+import '@fontsource-variable/archivo/wdth.css';
 import '@fontsource-variable/hanken-grotesk';
+import '@fontsource-variable/jetbrains-mono';
 import './styles.css';
 import App from './App';
 

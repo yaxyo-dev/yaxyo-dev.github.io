@@ -35,6 +35,8 @@ Prices are in the `offer` block of `src/content/ui.js`, once for each language.
 
 Copy an entry in `src/content/projects.js` and change it. Its `slug` becomes the page address, so `slug: 'my-project'` is published at `/work/my-project/`. Images go in `public/work/`, and a demo site goes in `public/demos/`.
 
+The order of the cards in the home page gallery is the `gallery` list at the bottom of the same file.
+
 To remove a project, delete its entry, then search `src/content/ui.js` for any sentences that mention it.
 
 ### When a demo becomes real client work

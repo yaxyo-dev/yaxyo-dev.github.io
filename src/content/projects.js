@@ -282,7 +282,9 @@ export const projects = [
   },
 ];
 
-export const sites = projects.filter((p) => p.group === 'site');
-export const game = projects.find((p) => p.group === 'game');
-export const bot = projects.find((p) => p.group === 'bot');
 export const projectBySlug = (slug) => projects.find((p) => p.slug === slug);
+
+// The order of the cards in the home page gallery. The first one starts in the centre.
+export const gallery = ['cambridge-academy', 'asqar-mall', 'troop-crates', 'yamakasi-barbershop', 'mijoz-bot', 'sher-hotel']
+  .map(projectBySlug)
+  .filter(Boolean);

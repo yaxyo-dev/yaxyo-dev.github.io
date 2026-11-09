@@ -10,21 +10,28 @@ export const ui = {
         'Portfolio of Yaxyo Nigmatov, a junior engineer in Samarkand, Uzbekistan. Demo websites for local businesses, an AI assistant for Telegram and a Roblox game.',
     },
     skip: 'Skip to content',
-    nav: { work: 'Work', about: 'About', contact: 'Contact' },
+    nav: { work: 'Work', about: 'About', skills: 'Skills', contact: 'Contact' },
     switchLabel: 'O‘zbekcha',
     switchShort: 'O‘Z',
     switchTitle: 'Read this page in Uzbek',
     hero: {
       statement: 'I build websites, Telegram bots and games from Samarkand, Uzbekistan.',
-      intro:
-        'I’m Yaxyo Nigmatov, a junior engineer. Recent work: demo websites for four local businesses, an AI assistant that answers customers on Telegram, and a Roblox game with its own economy.',
-      status: 'Open to new projects',
-      primary: 'Message me on Telegram',
-      secondary: 'See the work',
+      before: 'I build',
+      after: '',
+      words: ['websites', 'Telegram bots', 'games'],
+      badge: 'Junior Engineer // Samarkand, UZ',
+      primary: 'Message me',
+      stack: 'React · Python · Luau',
+      scroll: 'Scroll to discover',
     },
-    sites: {
-      title: 'Websites for local businesses',
-      lede: 'Four working demos for a barbershop, an English school, a shopping centre and a hotel in Kattaqo‘rg‘on and Angor. I build the demo first. The owner decides after seeing it.',
+    work: {
+      eyebrow: 'Selected work · 3D gallery',
+      title: 'Work',
+      galleryLabel: 'Projects',
+      prev: 'Previous project',
+      next: 'Next project',
+      open: 'Open case study',
+      live: 'Live demo',
     },
     offer: {
       title: 'If you own a small business, here’s how it works',
@@ -38,13 +45,11 @@ export const ui = {
       prefill: 'Hello! I’d like a free demo website for my business.',
     },
     game: {
-      lede: 'A Roblox game about opening crates, collecting troops and surviving a lava obstacle course. 18 troops, 5 crates, rebirths, daily streaks and about 2,800 lines of Luau.',
       alt: 'Troop Crates promo art: a glowing crate surrounded by blocky troops, with the words Open, Collect, Survive the Lava',
       altLava: 'Lava Run promo art: a troop jumping between platforms over lava toward a trophy',
       altSecret: 'Secret Troops promo art: Glitch, Void King and Golden God on a glowing stage',
     },
     bot: {
-      lede: 'A Telegram assistant that replies to customers in my name and knows when to stop talking. The moment someone wants to agree a deal, it goes quiet and calls me in.',
       chatLabel: 'Example of a customer conversation with the bot',
       chatCaption: 'Example conversation, based on the bot’s real rules.',
       chat: [
@@ -55,19 +60,11 @@ export const ui = {
         ['sys', 'Handed to Yaxyo. The bot stays quiet in this chat for 48 hours.'],
       ],
     },
-    more: 'Read the case study',
     about: {
-      title: 'About',
+      title: 'About me',
       body: [
         'I pushed my first website to GitHub in July 2026. Four months later I was building things people can actually use: pages for businesses in my region, an assistant that handles customer messages, and a game with its own economy.',
         'The goal hasn’t changed since that first page: make things that are easy to use and work well on every screen. Right now I’m going deeper into React, APIs and responsive design, and improving my English so I can read technical documentation more easily.',
-      ],
-      skillsTitle: 'What I work with',
-      skills: [
-        ['Web', 'HTML, CSS, JavaScript, React, React Router, Vite, Bootstrap'],
-        ['Bots', 'Python, python-telegram-bot, Gemini API'],
-        ['Games', 'Roblox Studio, Luau'],
-        ['Tools', 'Git, GitHub'],
       ],
       timelineTitle: 'So far',
       timeline: [
@@ -77,12 +74,22 @@ export const ui = {
       ],
       photoAlt: 'Portrait of Yaxyo Nigmatov',
     },
+    skills: {
+      eyebrow: 'Skills',
+      title: 'What I work with',
+      items: [
+        ['Web and interfaces', 'Pages that load fast and look right on a phone first.', ['HTML', 'CSS', 'JavaScript', 'React', 'React Router', 'Vite', 'Bootstrap']],
+        ['Telegram bots', 'Assistants that answer customers and know when to hand over to a person.', ['Python', 'python-telegram-bot', 'Gemini API']],
+        ['Games', 'Game loops, in-game economies and server logic for Roblox.', ['Roblox Studio', 'Luau']],
+        ['Tools', 'Version control and getting work online.', ['Git', 'GitHub', 'GitHub Pages']],
+      ],
+    },
     contact: {
       title: 'Let’s talk.',
       lede: 'Telegram is the fastest way to reach me. Email works too.',
       email: 'Email',
     },
-    footer: 'Built with React and Vite. Every page is prerendered to static HTML.',
+    footer: 'Built with React, Vite and Three.js. Every page is prerendered to static HTML.',
     case: {
       back: 'All work',
       role: 'My role',
@@ -108,21 +115,28 @@ export const ui = {
         'Samarqandlik junior muhandis Yaxyo Nigmatovning portfoliosi. Mahalliy bizneslar uchun namuna saytlar, Telegram uchun AI yordamchi va Roblox o‘yini.',
     },
     skip: 'Asosiy qismga o‘tish',
-    nav: { work: 'Ishlar', about: 'Haqida', contact: 'Aloqa' },
+    nav: { work: 'Ishlar', about: 'Haqida', skills: 'Ko‘nikmalar', contact: 'Aloqa' },
     switchLabel: 'English',
     switchShort: 'EN',
     switchTitle: 'Bu sahifani ingliz tilida o‘qish',
     hero: {
       statement: 'Samarqanddan turib saytlar, Telegram botlar va o‘yinlar yarataman.',
-      intro:
-        'Men Yaxyo Nigmatov, junior muhandisman. So‘nggi ishlarim: to‘rtta mahalliy biznes uchun namuna saytlar, mijozlarga Telegramda javob beradigan AI yordamchi va o‘z iqtisodiyotiga ega Roblox o‘yini.',
-      status: 'Yangi loyihalarga ochiqman',
-      primary: 'Telegramda yozish',
-      secondary: 'Ishlarni ko‘rish',
+      before: '',
+      after: 'yarataman',
+      words: ['saytlar', 'Telegram botlar', 'o‘yinlar'],
+      badge: 'Junior muhandis // Samarqand, UZ',
+      primary: 'Menga yozing',
+      stack: 'React · Python · Luau',
+      scroll: 'Pastga aylantiring',
     },
-    sites: {
-      title: 'Mahalliy bizneslar uchun saytlar',
-      lede: 'Kattaqo‘rg‘on va Angordagi sartaroshxona, ingliz tili markazi, savdo markazi va mehmonxona uchun to‘rtta ishlaydigan namuna. Avval namunani tayyorlayman, qarorni esa biznes egasi uni ko‘rgandan keyin qabul qiladi.',
+    work: {
+      eyebrow: 'Tanlangan ishlar · 3D galereya',
+      title: 'Ishlar',
+      galleryLabel: 'Loyihalar',
+      prev: 'Oldingi loyiha',
+      next: 'Keyingi loyiha',
+      open: 'Batafsil o‘qish',
+      live: 'Jonli namuna',
     },
     offer: {
       title: 'Kichik biznes egasi bo‘lsangiz, ish shunday boradi',
@@ -136,13 +150,11 @@ export const ui = {
       prefill: 'Salom! Biznesim uchun bepul namuna sayt kerak edi.',
     },
     game: {
-      lede: 'Yashiklar ochish, jangchilar yig‘ish va lava ustidagi to‘siqlardan o‘tish haqidagi Roblox o‘yini. 18 jangchi, 5 yashik, rebirth, kunlik mukofotlar va 2 800 qatorga yaqin Luau kodi.',
       alt: 'Troop Crates reklama rasmi: yonayotgan yashik va uning atrofidagi jangchilar',
       altLava: 'Lava Run reklama rasmi: lava ustida sakrayotgan jangchi va uzoqdagi kubok',
       altSecret: 'Secret Troops reklama rasmi: Glitch, Void King va Golden God jangchilari',
     },
     bot: {
-      lede: 'Mijozlarga mening nomimdan javob beradigan va qachon jim turishni biladigan Telegram yordamchi. Mijoz kelishuvga tayyor bo‘lishi bilan bot to‘xtaydi va meni chaqiradi.',
       chatLabel: 'Mijozning bot bilan suhbatiga misol',
       chatCaption: 'Suhbat namunasi, botning haqiqiy qoidalari asosida.',
       chat: [
@@ -153,19 +165,11 @@ export const ui = {
         ['sys', 'Suhbat Yaxyoga topshirildi. Bot bu chatda 48 soat jim turadi.'],
       ],
     },
-    more: 'Batafsil o‘qish',
     about: {
       title: 'Men haqimda',
       body: [
         'Birinchi saytimni GitHub’ga 2026-yil iyulida joylaganman. To‘rt oydan keyin esa odamlar haqiqatan foydalana oladigan narsalar yaratayotgan edim: hududimdagi bizneslar uchun sahifalar, mijozlar xabarlariga javob beradigan yordamchi va o‘z iqtisodiyotiga ega o‘yin.',
         'Maqsadim o‘sha birinchi sahifadan beri o‘zgarmagan: foydalanish oson va barcha ekranlarda yaxshi ishlaydigan narsalar yaratish. Hozir React, API bilan ishlash va moslashuvchan dizaynni chuqurroq o‘rganyapman, texnik hujjatlarni yaxshiroq tushunish uchun ingliz tilini ham o‘rganyapman.',
-      ],
-      skillsTitle: 'Ishlatadigan texnologiyalarim',
-      skills: [
-        ['Veb', 'HTML, CSS, JavaScript, React, React Router, Vite, Bootstrap'],
-        ['Botlar', 'Python, python-telegram-bot, Gemini API'],
-        ['O‘yinlar', 'Roblox Studio, Luau'],
-        ['Vositalar', 'Git, GitHub'],
       ],
       timelineTitle: 'Shu paytgacha',
       timeline: [
@@ -175,12 +179,22 @@ export const ui = {
       ],
       photoAlt: 'Yaxyo Nigmatovning surati',
     },
+    skills: {
+      eyebrow: 'Ko‘nikmalar',
+      title: 'Texnologiyalarim',
+      items: [
+        ['Veb va interfeyslar', 'Tez yuklanadigan va avvalo telefonda to‘g‘ri ko‘rinadigan sahifalar.', ['HTML', 'CSS', 'JavaScript', 'React', 'React Router', 'Vite', 'Bootstrap']],
+        ['Telegram botlar', 'Mijozlarga javob beradigan va kerak bo‘lganda suhbatni odamga topshiradigan yordamchilar.', ['Python', 'python-telegram-bot', 'Gemini API']],
+        ['O‘yinlar', 'Roblox uchun o‘yin tsikllari, o‘yin iqtisodiyoti va server mantig‘i.', ['Roblox Studio', 'Luau']],
+        ['Vositalar', 'Versiyalarni boshqarish va ishni internetga chiqarish.', ['Git', 'GitHub', 'GitHub Pages']],
+      ],
+    },
     contact: {
       title: 'Keling, gaplashamiz.',
       lede: 'Telegram orqali yozsangiz, tezroq javob beraman. E-pochtaga ham yozishingiz mumkin.',
       email: 'E-pochta',
     },
-    footer: 'React va Vite bilan qurilgan. Har bir sahifa oldindan statik HTML qilib tayyorlanadi.',
+    footer: 'React, Vite va Three.js bilan qurilgan. Har bir sahifa oldindan statik HTML qilib tayyorlanadi.',
     case: {
       back: 'Barcha ishlar',
       role: 'Vazifam',

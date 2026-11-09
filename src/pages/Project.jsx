@@ -72,13 +72,13 @@ export default function Project({ slug }) {
 
   return (
     <>
-      <article className="case">
+      <article className="case" data-tone="light">
         <header className="case-head wrap">
           <Link className="case-back" to={`${localized(lang, '/')}#work`}>
             <FaArrowLeft aria-hidden="true" /> {t.back}
           </Link>
-          <p className="case-kind">{c.place ? `${c.type}, ${c.place}` : c.type}</p>
-          <h1>{c.name}</h1>
+          <p className="eyebrow case-kind">{c.place ? `${c.type}, ${c.place}` : c.type}</p>
+          <h1 className="display">{c.name}</h1>
           <p className="case-lede">{c.summary}</p>
           <dl className="case-facts">
             {facts.map(([label, value]) => (
@@ -90,7 +90,7 @@ export default function Project({ slug }) {
           </dl>
         </header>
 
-        <div className="case-band" style={{ '--band': project.band, '--band-ink': project.bandInk }}>
+        <div className="case-band" data-tone="dark" style={{ '--band': project.band, '--band-ink': project.bandInk }}>
           <div className="wrap">
             <Stage project={project} lang={lang} />
           </div>
@@ -116,8 +116,8 @@ export default function Project({ slug }) {
         </div>
 
         <nav className="case-next wrap" aria-label={t.next}>
-          <span>{t.next}</span>
-          <Link to={localized(lang, `/work/${next.slug}/`)}>
+          <span className="eyebrow">{t.next}</span>
+          <Link className="display" to={localized(lang, `/work/${next.slug}/`)}>
             {next[lang].name} <FaArrowRight aria-hidden="true" />
           </Link>
         </nav>
