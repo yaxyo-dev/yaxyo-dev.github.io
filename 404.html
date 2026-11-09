@@ -3,15 +3,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script>document.documentElement.classList.add('js')</script>
     <link rel="preload" href="/assets/archivo-latin-wdth-normal-DY7AcnAa.woff2" as="font" type="font/woff2" crossorigin />
     <title>Page not found · Yaxyo Nigmatov</title>
     <meta name="robots" content="noindex" />
     <meta name="theme-color" content="#05070f" />
+    <script>
+      // Runs before the page first draws, so a saved theme never flashes the wrong one.
+      document.documentElement.classList.add('js');
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.dataset.theme = 'light';
+          document.querySelector('meta[name="theme-color"]').content = '#f3eee3';
+        }
+      } catch {}
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <script type="module" crossorigin src="/assets/index-muajuhvm.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-MfKxwRyl.css">
+    <script type="module" crossorigin src="/assets/index-Dw-NzjlB.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-tRS-eCCs.css">
   </head>
   <body>
     <div id="root"><main id="main" class="not-found wrap"><p class="display not-found-code dome-fill" aria-hidden="true">404</p><h1 class="display">This page doesn’t exist.</h1><p lang="uz">Bunday sahifa yo‘q.</p><div class="actions"><a class="pill pill-solid" href="/" data-discover="true">Go to the home page</a><a class="pill" lang="uz" href="/uz/" data-discover="true">Bosh sahifaga o‘tish</a></div></main></div>
