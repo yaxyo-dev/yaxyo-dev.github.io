@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cambridge Academy — Angor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter+Tight:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#f4f6fb; --surface:#ffffff; --ink:#111a33; --muted:#5a6480; --line:#dfe4f0;
+  --navy:#14254f; --red:#c8323c; --gold:#e8b44a;
+  --display:"Fraunces", Georgia, serif; --body:"Inter Tight", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.demo{background:var(--gold);color:#2a1d00;text-align:center;font-size:13px;font-weight:700;padding:7px 12px}
+.hero{background:var(--navy);color:#fff}
+.hero .wrap{padding-block:52px 44px;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+.crest{display:inline-flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.12em;font-size:13px;text-transform:uppercase}
+.crest i{width:34px;height:34px;border-radius:8px;background:var(--red);display:grid;place-items:center;font-style:normal;font-family:var(--display);font-size:18px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(36px,7.5vw,62px);line-height:1.02;margin:16px 0 12px;text-wrap:balance}
+h1 em{font-style:italic;color:var(--gold)}
+.hero p{margin:0;opacity:.9;max-width:44ch;font-size:18px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{display:inline-block;font-weight:700;border-radius:10px;padding:12px 20px;text-decoration:none;border:0;font:inherit;font-weight:700;cursor:pointer}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{border:1.5px solid rgba(255,255,255,.6);color:#fff}
+.score{background:#fff;color:var(--ink);border-radius:18px;padding:22px;display:grid;gap:12px}
+.score h3{margin:0;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bands{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.bands div{background:var(--bg);border-radius:10px;padding:10px 4px;font-size:12px;color:var(--muted)}
+.bands b{display:block;font-family:var(--display);font-size:24px;color:var(--navy)}
+.score small{color:var(--muted)}
+section{padding-block:48px}
+h2{font-family:var(--display);font-size:clamp(26px,5vw,36px);margin:0 0 8px}
+.lead{color:var(--muted);margin:0 0 24px;max-width:60ch}
+.courses{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.course{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:8px;align-content:start}
+.tag{justify-self:start;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#fde8ea;color:var(--red)}
+.course h3{margin:0;font-size:19px}
+.course p{margin:0;color:var(--muted);font-size:14px}
+.meta{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:10px;font-size:14px;font-variant-numeric:tabular-nums}
+.meta b{color:var(--navy)}
+.why{background:var(--surface);border-block:1px solid var(--line)}
+.points{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.points div{border-left:3px solid var(--gold);padding-left:14px}
+.points b{display:block;font-size:17px;margin-bottom:4px}
+.points span{color:var(--muted);font-size:14px}
+.reg{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:12px}
+label{font-size:13px;font-weight:600;display:grid;gap:6px}
+input,select{font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.ok{color:#1f7a45;font-weight:600;min-height:1.2em;margin:0}
+.addr p{margin:0 0 10px}
+footer{background:var(--navy);color:#c6cde0;font-size:14px}
+footer .wrap{padding-block:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (max-width:760px){.hero .wrap,.reg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="demo">NAMUNA SAYT · Cambridge Academy uchun tayyorlangan demo · Narx va ma'lumotlar keyin almashtiriladi</div>
+
+<section class="hero"><div class="wrap">
+  <div>
+    <span class="crest"><i>C</i>Cambridge Academy · Angor</span>
+    <h1>Ingliz tilini <em>natija</em> bilan o'rganing</h1>
+    <p>IELTS, General English va bolalar uchun kurslar. Kichik guruhlar, tajribali ustozlar, har oy mock test.</p>
+    <div class="btns">
+      <a class="btn btn-red" href="#yozilish">Bepul sinov darsiga yozilish</a>
+      <a class="btn btn-ghost" href="#kurslar">Kurslar</a>
+    </div>
+  </div>
+  <div class="score">
+    <h3>O'quvchilarimiz natijalari</h3>
+    <div class="bands">
+      <div><b>7.5</b>Listening</div><div><b>7.0</b>Reading</div><div><b>6.5</b>Writing</div><div><b>7.0</b>Speaking</div>
+    </div>
+    <small>Namuna: haqiqiy o'quvchilar natijalari va sertifikatlari bilan almashtiriladi.</small>
+  </div>
+</div></section>
+
+<section id="kurslar"><div class="wrap">
+  <h2>Kurslar</h2>
+  <p class="lead">Darajangizni bepul test bilan aniqlaymiz va sizga mos guruhga joylaymiz.</p>
+  <div class="courses">
+    <div class="course"><span class="tag">Eng ko'p tanlanadi</span><h3>IELTS Preparation</h3><p>4 ta bo'lim bo'yicha tayyorgarlik, haftalik mock testlar.</p><div class="meta"><span>Haftada 3 marta</span><b>___ so'm / oy</b></div></div>
+    <div class="course"><span class="tag">Boshlang'ichdan</span><h3>General English</h3><p>Beginner'dan Upper-Intermediate'gacha, gapirishga urg'u.</p><div class="meta"><span>Haftada 3 marta</span><b>___ so'm / oy</b></div></div>
+    <div class="course"><span class="tag">7–12 yosh</span><h3>Kids English</h3><p>O'yin va qo'shiqlar orqali qiziqarli darslar.</p><div class="meta"><span>Haftada 2 marta</span><b>___ so'm / oy</b></div></div>
+    <div class="course"><span class="tag">Maktab o'quvchilari</span><h3>CEFR / Milliy sertifikat</h3><p>B1–C1 darajadagi sertifikatga tayyorgarlik.</p><div class="meta"><span>Haftada 3 marta</span><b>___ so'm / oy</b></div></div>
+  </div>
+</div></section>
+
+<section class="why"><div class="wrap">
+  <h2>Nega aynan biz</h2>
+  <div class="points">
+    <div><b>Kichik guruhlar</b><span>Har bir guruhda 8–12 o'quvchi, ustoz har biringizga e'tibor beradi.</span></div>
+    <div><b>Har oy mock test</b><span>Haqiqiy imtihon formatida, natijalar ota-onalarga yuboriladi.</span></div>
+    <div><b>Tajribali ustozlar</b><span>IELTS 7.5+ natijaga ega o'qituvchilar.</span></div>
+    <div><b>Qulay joy</b><span>Angor markazida, sud binosi yonida.</span></div>
+  </div>
+</div></section>
+
+<section id="yozilish"><div class="wrap reg">
+  <div class="addr">
+    <h2>Bepul sinov darsi</h2>
+    <p class="lead">Ma'lumotlaringizni qoldiring, administrator siz bilan bog'lanadi. Arizalar to'g'ridan-to'g'ri markaz Telegramiga keladi.</p>
+    <p><b>Manzil:</b> Surxondaryo viloyati, Angor tumani, sud binosi yonida.</p>
+    <p><b>Telefon:</b> +998 __ ___ __ __</p>
+    <p><b>Ish vaqti:</b> Dushanba – Shanba, 08:00 – 19:00</p>
+  </div>
+  <form id="f">
+    <label for="n">Ism<input id="n" required placeholder="Masalan: Dilnoza"></label>
+    <label for="p">Telefon<input id="p" required placeholder="+998 90 123 45 67"></label>
+    <label for="c">Kurs<select id="c"><option>IELTS Preparation</option><option>General English</option><option>Kids English</option><option>CEFR / Milliy sertifikat</option></select></label>
+    <button class="btn btn-red" type="submit">Yozilish</button>
+    <p class="ok" id="ok" aria-live="polite"></p>
+  </form>
+</div></section>
+
+<footer><div class="wrap"><span>© Cambridge Academy, Angor</span><span>Sayt namunasi: @nigmatov_yaxyo</span></div></footer>
+<script>
+document.getElementById("f").addEventListener("submit",function(e){e.preventDefault();document.getElementById("ok").textContent="Rahmat! Namunada ariza yuborilmaydi. Haqiqiy saytda u markaz Telegramiga keladi.";});
+</script>
+</body>
+</html>
