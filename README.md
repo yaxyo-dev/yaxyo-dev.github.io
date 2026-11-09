@@ -43,7 +43,15 @@ Change `status` for that project in `src/content/projects.js`, in both languages
 
 ## Publish changes
 
-The site lives at https://yaxyo-dev.github.io. Every push to `main` rebuilds and publishes it automatically, usually within a couple of minutes.
+The site lives at https://yaxyo-dev.github.io. To publish your latest changes, run:
+
+```bash
+npm run deploy
+```
+
+This builds the site and uploads the result to the `gh-pages` branch. GitHub usually updates the live site within a couple of minutes.
+
+To save your source code to GitHub as well:
 
 ```bash
 git add .
@@ -51,7 +59,7 @@ git commit -m "Describe your change"
 git push
 ```
 
-To check the built site on your computer first:
+To check the built site on your computer before publishing:
 
 ```bash
 npm run build
