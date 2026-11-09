@@ -25,7 +25,7 @@ export const ui = {
       scroll: 'Scroll to discover',
     },
     work: {
-      eyebrow: 'Selected work · 3D gallery',
+      eyebrow: 'Selected work',
       title: 'Work',
       galleryLabel: 'Projects',
       prev: 'Previous project',
@@ -85,7 +85,9 @@ export const ui = {
       ],
     },
     contact: {
-      title: 'Let’s talk.',
+      title: 'Just say salom.',
+      before: 'Just say',
+      after: '',
       lede: 'Telegram is the fastest way to reach me. Email works too.',
       email: 'Email',
     },
@@ -130,7 +132,7 @@ export const ui = {
       scroll: 'Pastga aylantiring',
     },
     work: {
-      eyebrow: 'Tanlangan ishlar · 3D galereya',
+      eyebrow: 'Tanlangan ishlar',
       title: 'Ishlar',
       galleryLabel: 'Loyihalar',
       prev: 'Oldingi loyiha',
@@ -190,7 +192,9 @@ export const ui = {
       ],
     },
     contact: {
-      title: 'Keling, gaplashamiz.',
+      title: 'Shunchaki salom deng.',
+      before: 'Shunchaki',
+      after: 'deng',
       lede: 'Telegram orqali yozsangiz, tezroq javob beraman. E-pochtaga ham yozishingiz mumkin.',
       email: 'E-pochta',
     },

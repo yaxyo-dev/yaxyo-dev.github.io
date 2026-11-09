@@ -72,7 +72,7 @@ export default function Project({ slug }) {
 
   return (
     <>
-      <article className="case" data-tone="light">
+      <article className="case" style={{ '--glow': project.glow }}>
         <header className="case-head wrap">
           <Link className="case-back" to={`${localized(lang, '/')}#work`}>
             <FaArrowLeft aria-hidden="true" /> {t.back}
@@ -90,7 +90,7 @@ export default function Project({ slug }) {
           </dl>
         </header>
 
-        <div className="case-band" data-tone="dark" style={{ '--band': project.band, '--band-ink': project.bandInk }}>
+        <div className="case-band" style={{ '--band': project.band, '--band-ink': project.bandInk }}>
           <div className="wrap">
             <Stage project={project} lang={lang} />
           </div>

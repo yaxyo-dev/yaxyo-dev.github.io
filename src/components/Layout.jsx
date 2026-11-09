@@ -4,7 +4,7 @@ import Cursor from './Cursor';
 import { profile } from '../content/profile';
 import { ui } from '../content/ui';
 import { pageMeta } from '../lib/head';
-import { localized, otherLanguagePath, unlocalized, useLang } from '../lib/i18n';
+import { localized, otherLanguagePath, useLang } from '../lib/i18n';
 
 const NAV_SECTIONS = ['work', 'about', 'skills', 'contact'];
 
@@ -37,28 +37,23 @@ function usePageChange() {
   }, [pathname, hash, key, navigationType]);
 }
 
-// Works out which section is under the header, so the header can match its
-// colours and the menu can mark where you are.
-function useSectionUnderHeader(pathname) {
-  const [state, setState] = useState({
-    tone: unlocalized(pathname) === '/' ? 'dark' : 'light',
-    active: null,
-  });
+// Works out which section is under the header, so the menu can mark where you are.
+function useActiveSection(pathname) {
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
       const line = 36;
-      const under = [...document.querySelectorAll('[data-tone]')]
-        .filter((section) => {
-          const rect = section.getBoundingClientRect();
-          return rect.top <= line && rect.bottom > line;
-        })
-        .pop();
-      const tone = under?.dataset.tone ?? 'light';
-      const active = NAV_SECTIONS.includes(under?.id) ? under.id : null;
-      setState((prev) => (prev.tone === tone && prev.active === active ? prev : { tone, active }));
+      const current = NAV_SECTIONS.find((id) => {
+        const rect = document.getElementById(id)?.getBoundingClientRect();
+        return rect && rect.top <= line && rect.bottom > line;
+      });
+      // The last section may be too short to ever reach the header.
+      const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+      const last = document.getElementById(NAV_SECTIONS.at(-1));
+      setActive(atBottom && last ? NAV_SECTIONS.at(-1) : (current ?? null));
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -73,7 +68,7 @@ function useSectionUnderHeader(pathname) {
     };
   }, [pathname]);
 
-  return state;
+  return active;
 }
 
 // Fades elements marked data-reveal into place as they scroll into view.
@@ -99,7 +94,7 @@ export default function Layout() {
   usePageChange();
   const lang = useLang();
   const { pathname } = useLocation();
-  const { tone, active } = useSectionUnderHeader(pathname);
+  const active = useActiveSection(pathname);
   useReveal(pathname);
   const t = ui[lang];
   const home = localized(lang, '/');
@@ -109,7 +104,7 @@ export default function Layout() {
     <>
       <a className="skip-link" href="#main">{t.skip}</a>
       <Cursor />
-      <header className="site-header" data-tone={tone}>
+      <header className="site-header">
         <div className="site-header-inner wrap">
           <Link className="brand" to={home} aria-label={profile.name}>
             <span className="brand-name">{first}</span>

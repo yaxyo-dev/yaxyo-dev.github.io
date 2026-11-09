@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router';
-import TileWall from '../components/TileWall';
 
 // Shown in both languages, because a missing page can't tell which one you wanted.
 export default function NotFound() {
@@ -10,7 +9,7 @@ export default function NotFound() {
 
   return (
     <main id="main" className="not-found wrap">
-      <TileWall text="404" palette="hero" className="not-found-wall" />
+      <p className="display not-found-code dome-fill" aria-hidden="true">404</p>
       <h1 className="display">This page doesn’t exist.</h1>
       <p lang="uz">Bunday sahifa yo‘q.</p>
       <div className="actions">

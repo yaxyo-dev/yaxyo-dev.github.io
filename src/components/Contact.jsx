@@ -1,7 +1,6 @@
 import { FaEnvelope, FaGithub, FaLinkedin, FaTelegram } from 'react-icons/fa6';
 import { profile } from '../content/profile';
 import { ui } from '../content/ui';
-import TileWall from './TileWall';
 
 export default function Contact({ lang }) {
   const t = ui[lang];
@@ -13,9 +12,14 @@ export default function Contact({ lang }) {
   ];
 
   return (
-    <section id="contact" className="contact" data-tone="dark">
+    <section id="contact" className="contact" data-shot="contact">
       <div className="wrap">
-        <h2 className="display contact-title" data-reveal>{t.contact.title}</h2>
+        <h2 className="contact-title" data-reveal>
+          <span className="sr-only">{t.contact.title}</span>
+          {t.contact.before && <span className="display contact-word" aria-hidden="true">{t.contact.before}</span>}
+          <span className="display contact-salom dome-fill" aria-hidden="true">Salom</span>
+          {t.contact.after && <span className="display contact-word" aria-hidden="true">{t.contact.after}</span>}
+        </h2>
         <p className="contact-lede">{t.contact.lede}</p>
         <ul className="contact-links">
           {links.map((link) => (
@@ -30,7 +34,6 @@ export default function Contact({ lang }) {
             </li>
           ))}
         </ul>
-        <TileWall text="SALOM" palette="night" className="contact-wall" />
         <footer className="site-footer">
           <span>© {profile.name}</span>
           <span>{t.footer}</span>

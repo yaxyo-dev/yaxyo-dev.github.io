@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { FaArrowLeft, FaArrowRight, FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { gallery } from '../content/projects';
@@ -68,8 +68,20 @@ export default function WorkCarousel({ lang }) {
   const c = project[lang];
   const caseLink = localized(lang, `/work/${project.slug}/`);
 
+  // Tints the light behind the dome to match the project showing.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('dome:accent', { detail: project.glow }));
+  }, [project.glow]);
+
   return (
-    <div className="carousel" role="group" aria-roledescription="carousel" aria-label={t.galleryLabel} onKeyDown={onKeyDown}>
+    <div
+      className="carousel"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label={t.galleryLabel}
+      onKeyDown={onKeyDown}
+      style={{ '--glow': project.glow }}
+    >
       <noscript><style dangerouslySetInnerHTML={{ __html: noScriptStyles }} /></noscript>
 
       <div className="wrap work-head">
@@ -152,7 +164,7 @@ export default function WorkCarousel({ lang }) {
             <p>{c.summary}</p>
             {c.status && <p className="carousel-status">{c.status}</p>}
             <div className="actions">
-              <Link className="pill pill-ink" to={caseLink}>{t.open} <FaArrowRight aria-hidden="true" /></Link>
+              <Link className="pill pill-solid" to={caseLink}>{t.open} <FaArrowRight aria-hidden="true" /></Link>
               {project.demo && (
                 <a className="pill" href={project.demo} target="_blank" rel="noopener noreferrer">
                   {t.live} <FaArrowUpRightFromSquare aria-hidden="true" />
