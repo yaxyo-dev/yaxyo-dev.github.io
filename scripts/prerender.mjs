@@ -18,7 +18,7 @@ const template = await fs.readFile(path.join(dist, 'index.html'), 'utf8');
 // Load the display font early, since it's used for the biggest text on the page.
 const assets = await fs.readdir(path.join(dist, 'assets'));
 const fontPreloads = assets
-  .filter((file) => /^archivo-latin-wdth-normal-.*\.woff2$/.test(file))
+  .filter((file) => /^sofia-sans-extra-condensed-latin-wght-normal-.*\.woff2$/.test(file))
   .map((file) => `<link rel="preload" href="/assets/${file}" as="font" type="font/woff2" crossorigin />`)
   .join('\n    ');
 

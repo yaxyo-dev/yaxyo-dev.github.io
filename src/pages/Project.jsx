@@ -1,9 +1,9 @@
 import { Link } from 'react-router';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
 import ChatMock from '../components/ChatMock';
 import Contact from '../components/Contact';
+import { ArrowLeft, ArrowRight } from '../components/Icons';
 import LiveDemo from '../components/LiveDemo';
-import { projectBySlug, projects } from '../content/projects';
+import { gallery, projectBySlug } from '../content/projects';
 import { ui } from '../content/ui';
 import { localized, useLang } from '../lib/i18n';
 
@@ -47,7 +47,7 @@ function Stage({ project, lang }) {
     <div className="stage stage-bot">
       <ChatMock lang={lang} />
       <div className="flow">
-        <h2>{t.case.flowTitle}</h2>
+        <h2 className="display">{t.case.flowTitle}</h2>
         <ol>
           {c.flow.map((step) => <li key={step}>{step}</li>)}
         </ol>
@@ -61,7 +61,7 @@ export default function Project({ slug }) {
   const t = ui[lang].case;
   const project = projectBySlug(slug);
   const c = project[lang];
-  const next = projects[(projects.indexOf(project) + 1) % projects.length];
+  const next = gallery[(gallery.indexOf(project) + 1) % gallery.length];
 
   const facts = [
     [t.role, c.role],
@@ -72,14 +72,22 @@ export default function Project({ slug }) {
 
   return (
     <>
-      <article className="case" style={{ '--glow': project.glow }}>
-        <header className="case-head wrap">
-          <Link className="case-back" to={`${localized(lang, '/')}#work`}>
-            <FaArrowLeft aria-hidden="true" /> {t.back}
-          </Link>
-          <p className="eyebrow case-kind">{c.place ? `${c.type}, ${c.place}` : c.type}</p>
-          <h1 className="display">{c.name}</h1>
-          <p className="case-lede">{c.summary}</p>
+      <article className="case">
+        <div className="case-wall" style={{ '--wall': project.wall }}>
+          <header className="case-head wrap">
+            <Link className="text-link case-back" to={`${localized(lang, '/')}#work`}>
+              <ArrowLeft /> {t.back}
+            </Link>
+            <p className="wall-kind">{c.place ? `${c.type}, ${c.place}` : c.type}</p>
+            <h1 className="case-title display">{c.name}</h1>
+            <p className="case-lede">{c.summary}</p>
+          </header>
+          <div className="wrap">
+            <Stage project={project} lang={lang} />
+          </div>
+        </div>
+
+        <div className="wrap">
           <dl className="case-facts">
             {facts.map(([label, value]) => (
               <div key={label}>
@@ -88,37 +96,31 @@ export default function Project({ slug }) {
               </div>
             ))}
           </dl>
-        </header>
 
-        <div className="case-band" style={{ '--band': project.band, '--band-ink': project.bandInk }}>
-          <div className="wrap">
-            <Stage project={project} lang={lang} />
+          <div className="case-body">
+            {c.stats && (
+              <ul className="stats">
+                {c.stats.map(([value, label]) => (
+                  <li key={label}>
+                    <strong className="display">{value}</strong>
+                    <span>{label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {c.sections.map(([title, text]) => (
+              <section key={title} data-reveal>
+                <h2 className="display">{title}</h2>
+                <p>{text}</p>
+              </section>
+            ))}
           </div>
         </div>
 
-        <div className="case-body wrap">
-          {c.stats && (
-            <ul className="stats">
-              {c.stats.map(([value, label]) => (
-                <li key={label}>
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {c.sections.map(([title, text]) => (
-            <section key={title}>
-              <h2>{title}</h2>
-              <p>{text}</p>
-            </section>
-          ))}
-        </div>
-
-        <nav className="case-next wrap" aria-label={t.next}>
-          <span className="eyebrow">{t.next}</span>
-          <Link className="display" to={localized(lang, `/work/${next.slug}/`)}>
-            {next[lang].name} <FaArrowRight aria-hidden="true" />
+        <nav className="case-next" style={{ '--wall': next.wall }} aria-label={t.next}>
+          <Link className="wrap" to={localized(lang, `/work/${next.slug}/`)}>
+            <span className="wall-kind">{t.next}</span>
+            <span className="case-next-name display">{next[lang].name} <ArrowRight /></span>
           </Link>
         </nav>
       </article>

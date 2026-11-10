@@ -3,9 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script>document.documentElement.classList.add('js')</script>
     <!--head-->
-    <meta name="theme-color" content="#05070f" />
+    <meta name="theme-color" content="#0a0e17" />
+    <script>
+      // Runs before the page first draws, so nothing flashes or jumps.
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            root.dataset.theme = 'light';
+            document.querySelector('meta[name="theme-color"]').content = '#f5f0e6';
+          }
+        } catch (e) {}
+        // People who asked for less motion, are saving data or are on a device
+        // that would struggle get the still picture instead of the live 3D.
+        var nav = navigator;
+        var lessMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var weak = (nav.connection && nav.connection.saveData) || nav.deviceMemory <= 2 || nav.hardwareConcurrency <= 2;
+        if (lessMotion || weak || !('WebGL2RenderingContext' in window)) root.dataset.scene = 'static';
+      })();
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>

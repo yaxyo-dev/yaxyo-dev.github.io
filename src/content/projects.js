@@ -17,12 +17,10 @@ export const projects = [
     slug: 'yamakasi-barbershop',
     group: 'site',
     year: 2026,
-    band: '#121212',
-    bandInk: '#f3efe7',
-    glow: '#e2463a',
+    wall: '#8c1c2b',
     stack: ['HTML', 'CSS'],
     demo: '/demos/yamakasi-barbershop.html',
-    shots: { phone: '/work/yamakasi-phone.webp', desktop: '/work/yamakasi-desktop.webp' },
+    shots: { phone: '/work/yamakasi-phone.webp', desktop: '/work/yamakasi-desktop.webp', full: '/work/yamakasi-full.webp' },
     en: {
       name: 'Yamakasi Barbershop',
       type: 'Barbershop',
@@ -56,12 +54,10 @@ export const projects = [
     slug: 'cambridge-academy',
     group: 'site',
     year: 2026,
-    band: '#14254f',
-    bandInk: '#ffffff',
-    glow: '#e8b44a',
+    wall: '#1c3278',
     stack: ['HTML', 'CSS', 'JavaScript'],
     demo: '/demos/cambridge-academy.html',
-    shots: { phone: '/work/cambridge-phone.webp', desktop: '/work/cambridge-desktop.webp' },
+    shots: { phone: '/work/cambridge-phone.webp', desktop: '/work/cambridge-desktop.webp', full: '/work/cambridge-full.webp' },
     en: {
       name: 'Cambridge Academy',
       type: 'English school',
@@ -95,12 +91,10 @@ export const projects = [
     slug: 'asqar-mall',
     group: 'site',
     year: 2026,
-    band: '#0f5c4a',
-    bandInk: '#ffffff',
-    glow: '#18a37f',
+    wall: '#0f5a47',
     stack: ['HTML', 'CSS', 'SVG'],
     demo: '/demos/asqar-mall.html',
-    shots: { phone: '/work/asqar-phone.webp', desktop: '/work/asqar-desktop.webp' },
+    shots: { phone: '/work/asqar-phone.webp', desktop: '/work/asqar-desktop.webp', full: '/work/asqar-full.webp' },
     en: {
       name: 'Asqar Mall',
       type: 'Shopping centre',
@@ -134,12 +128,10 @@ export const projects = [
     slug: 'sher-hotel',
     group: 'site',
     year: 2026,
-    band: '#2a1a16',
-    bandInk: '#f5ece0',
-    glow: '#c0913f',
+    wall: '#7a4a12',
     stack: ['HTML', 'CSS'],
     demo: '/demos/sher-hotel.html',
-    shots: { phone: '/work/sher-phone.webp', desktop: '/work/sher-desktop.webp' },
+    shots: { phone: '/work/sher-phone.webp', desktop: '/work/sher-desktop.webp', full: '/work/sher-full.webp' },
     en: {
       name: 'Sher Mehmonxonasi',
       type: 'Hotel',
@@ -173,9 +165,7 @@ export const projects = [
     slug: 'troop-crates',
     group: 'game',
     year: 2026,
-    band: '#1f0c07',
-    bandInk: '#fff4e6',
-    glow: '#ff7a2c',
+    wall: '#4a1e5c',
     stack: ['Roblox Studio', 'Luau'],
     art: {
       banner: '/work/troop-banner.webp',
@@ -233,9 +223,7 @@ export const projects = [
     slug: 'mijoz-bot',
     group: 'bot',
     year: 2026,
-    band: '#0f2557',
-    bandInk: '#f3eee3',
-    glow: '#37b3b0',
+    wall: '#0b6a73',
     stack: ['Python', 'python-telegram-bot', 'Google Gemini'],
     en: {
       name: 'Mijoz Bot',
@@ -290,7 +278,7 @@ export const projects = [
 
 export const projectBySlug = (slug) => projects.find((p) => p.slug === slug);
 
-// The order of the cards in the home page gallery. The first one starts in the centre.
-export const gallery = ['cambridge-academy', 'asqar-mall', 'troop-crates', 'yamakasi-barbershop', 'mijoz-bot', 'sher-hotel']
+// The order the projects appear in on the home page.
+export const gallery = ['cambridge-academy', 'yamakasi-barbershop', 'asqar-mall', 'sher-hotel', 'mijoz-bot', 'troop-crates']
   .map(projectBySlug)
   .filter(Boolean);

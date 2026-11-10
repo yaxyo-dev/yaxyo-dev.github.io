@@ -11,6 +11,7 @@ export const profile = {
   telegram: { handle: '@nigmatov_yaxyo', url: 'https://t.me/nigmatov_yaxyo' },
   github: { handle: 'yaxyo-dev', url: 'https://github.com/yaxyo-dev' },
   linkedin: { handle: 'LinkedIn', url: 'https://www.linkedin.com/in/yaxyo-undefined-425b93439' },
+  instagram: { handle: '@nigmatov_yaxyo', url: 'https://www.instagram.com/nigmatov_yaxyo/' },
 
   // Optional portrait for the About section. Put a square image in public/
   // and set this to its path, for example '/portrait.jpg'.

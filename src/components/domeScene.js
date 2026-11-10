@@ -1,196 +1,153 @@
-// One 3D scene that stays behind the whole home page. As you scroll, the
-// camera travels around the dome: a shot for each section of the page.
-// Loaded on its own, after the page is ready, so it never slows the first paint.
+// The live 3D dome in the opening screen. It frames itself to the page layout
+// (the .dome-slot element) and flies in to the tiles as you scroll. Once the
+// page has covered it, it stops drawing, so the rest of the site stays light.
 import {
+  BackSide,
   BufferAttribute,
   BufferGeometry,
   Color,
   DirectionalLight,
-  Group,
-  LineBasicMaterial,
-  LineLoop,
+  Mesh,
+  MeshBasicMaterial,
   NeutralToneMapping,
   PerspectiveCamera,
   PMREMGenerator,
-  PointLight,
   Points,
   PointsMaterial,
   Scene,
+  SphereGeometry,
   Vector3,
   WebGLRenderer,
 } from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { buildTower, DOME_HEIGHT } from './domeModel';
+import { buildTower, FRAME } from './domeModel';
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const lerp = (a, b, t) => a + (b - a) * t;
-const smoothstep = (a, b, x) => {
-  if (a === b) return x >= b ? 1 : 0;
-  const t = clamp01((x - a) / (b - a));
-  return t * t * (3 - 2 * t);
+const smoother = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+
+const FOV = 20;
+
+// At night the dome is floodlit from below with a cold moon behind it.
+// By day there's a high sun and open sky.
+const NIGHT = {
+  key: { from: [-3.4, -2.2, 6.5], colour: 0xffc48c, power: 3.3 },
+  fill: { from: [5, -1.4, 5], colour: 0xff9e66, power: 1.5 },
+  rim: { from: [4, 6, -6], colour: 0x9db6ff, power: 3.4 },
+  sky: 0.2,
+};
+const DAY = {
+  key: { from: [-5, 7, 6], colour: 0xfff0dc, power: 2.7 },
+  fill: { from: [6, 1.5, 5], colour: 0xc3d8ff, power: 0.7 },
+  rim: { from: [4, 6, -6], colour: 0xffffff, power: 1.1 },
+  sky: 0.8,
 };
 
-// How large the dome is in the opening shot and where its tip sits. Keep in
-// step with --s and --f in styles.css, which place the still image of the dome.
-function frameFor(width, height) {
-  return width / height < 1
-    ? { scale: Math.min(0.24 * height, 0.377 * width), apex: 0.22 }
-    : { scale: Math.min(0.324 * height, 0.217 * width), apex: 0.3 };
-}
-
-// Where the camera stands and how the light feels in each section.
-// `wide` runs from 0 on a phone to 1 on a desktop screen.
-function shotsFor(width, height) {
-  const aspect = width / height;
-  const wide = clamp01((aspect - 0.6) / 0.9);
-  const { scale, apex } = frameFor(width, height);
-  const worldHeight = height / scale;
-  const heroFov = 24;
-  const heroZ = worldHeight / (2 * Math.tan((heroFov * Math.PI) / 360));
-  const heroY = DOME_HEIGHT + apex * worldHeight - worldHeight / 2;
-  const workX = lerp(0, -2.2, wide);
-  const workY = lerp(0.7, 1, wide);
-
-  const frontLight = { keyX: -5, keyY: 6, keyZ: 7 };
-  return {
-    hero: { x: 0, y: heroY, z: heroZ, lookX: 0, lookY: heroY, fov: heroFov, roll: 0, ...frontLight, key: 2.6, rim: 2, env: 0.42, halo: 1, dim: 0, accent: 0, foot: 1 },
-    work: { x: workX, y: workY, z: lerp(9.5, 7.6, wide), lookX: workX, lookY: workY, fov: 24, roll: 0, ...frontLight, key: 1.9, rim: 2.6, env: 0.3, halo: 0.35, dim: lerp(0.78, 0.5, wide), accent: 1, foot: 0 },
-    about: { x: 0, y: 0.6, z: lerp(7, 4.3, wide), lookX: 0, lookY: 0.6, fov: 14, roll: 0.5, keyX: -6.5, keyY: 1.4, keyZ: 1.1, key: 7, rim: 0, env: 0.08, halo: 0, dim: lerp(0.62, 0.08, wide), accent: 0, foot: 0 },
-    skills: { x: 0, y: -0.72, z: lerp(8, 5.2, wide), lookX: 0, lookY: -0.72, fov: 14, roll: 0, keyX: -4, keyY: 3, keyZ: 7, key: 2.4, rim: 1.2, env: 0.25, halo: 0, dim: lerp(0.86, 0.8, wide), accent: 0, foot: 0 },
-    contact: { x: 0, y: lerp(5.4, 4.2, wide), z: 15, lookX: 0, lookY: lerp(5.4, 4.2, wide), fov: 24, roll: 0, ...frontLight, key: 2.6, rim: 2.4, env: 0.42, halo: 0.6, dim: 0.1, accent: 0, foot: 0 },
+function makeLight(scene, night, day) {
+  const light = new DirectionalLight();
+  scene.add(light);
+  const a = { from: new Vector3(...night.from), colour: new Color(night.colour), power: night.power };
+  const b = { from: new Vector3(...day.from), colour: new Color(day.colour), power: day.power };
+  return (daylight) => {
+    light.position.lerpVectors(a.from, b.from, daylight);
+    light.color.lerpColors(a.colour, b.colour, daylight);
+    light.intensity = lerp(a.power, b.power, daylight);
   };
 }
 
-// Finds where each section starts and stops on the page. The camera holds its
-// shot while a section fills the screen and travels in the gaps between them.
-function measureSections() {
-  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-  return [...document.querySelectorAll('[data-shot]')].map((section) => {
-    const rect = section.getBoundingClientRect();
-    const start = Math.min(rect.top + window.scrollY, maxScroll);
-    const end = Math.min(Math.max(start, start + rect.height - window.innerHeight), maxScroll);
-    return { name: section.dataset.shot, start, end };
-  });
-}
-
-function mixShots(a, b, t) {
-  const mixed = {};
-  for (const key of Object.keys(a)) mixed[key] = lerp(a[key], b[key], t);
-  return mixed;
-}
-
-function shotAt(y, stops, shots) {
-  for (let i = 0; i < stops.length; i++) {
-    const stop = stops[i];
-    if (y <= stop.end || i === stops.length - 1) {
-      if (y >= stop.start || i === 0) return shots[stop.name];
-      const previous = stops[i - 1];
-      return mixShots(shots[previous.name], shots[stop.name], smoothstep(previous.end, stop.start, y));
-    }
+// A soft sky for the glaze to reflect, brightest at the horizon.
+function makeSkyReflection(renderer) {
+  const geometry = new SphereGeometry(20, 48, 24);
+  const position = geometry.attributes.position;
+  const colours = new Float32Array(position.count * 3);
+  const zenith = new Color(0.42, 0.6, 0.98);
+  const horizon = new Color(1.7, 1.5, 1.25);
+  const ground = new Color(0.24, 0.17, 0.12);
+  const colour = new Color();
+  for (let i = 0; i < position.count; i++) {
+    const height = position.getY(i) / 20;
+    if (height > 0) colour.lerpColors(horizon, zenith, height ** 0.55);
+    else colour.lerpColors(horizon, ground, (-height) ** 0.4);
+    colours.set([colour.r, colour.g, colour.b], i * 3);
   }
-  return shots.hero;
+  geometry.setAttribute('color', new BufferAttribute(colours, 3));
+  const material = new MeshBasicMaterial({ vertexColors: true, side: BackSide });
+  const sky = new Scene();
+  sky.add(new Mesh(geometry, material));
+
+  const generator = new PMREMGenerator(renderer);
+  const target = generator.fromScene(sky, 0.02);
+  generator.dispose();
+  geometry.dispose();
+  material.dispose();
+  return target;
 }
 
-// An eight-pointed star outline, the same shape as Samarkand's khatam tiles.
-function starPoints(radius) {
-  return Array.from({ length: 16 }, (_, k) => {
-    const angle = (k * Math.PI) / 8;
-    const r = k % 2 ? radius * 0.7654 : radius;
-    return new Vector3(r * Math.cos(angle), r * Math.sin(angle), 0);
-  });
+function makeStars() {
+  const count = 240;
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    positions.set([(Math.random() * 2 - 1) * 16, Math.random() * 16 - 3, -4 - Math.random() * 6], i * 3);
+  }
+  return new Points(
+    new BufferGeometry().setAttribute('position', new BufferAttribute(positions, 3)),
+    new PointsMaterial({ color: 0xffffff, size: 0.024, transparent: true, opacity: 0.7, depthWrite: false }),
+  );
 }
 
-export function mountDomeScene(host, { onReady }) {
+export function mountDomeScene({ pin, stage, slot, onReady }) {
+  const small = window.innerWidth < 760;
   const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-  renderer.toneMapping = NeutralToneMapping; // Keeps the glaze colours true.
-  host.appendChild(renderer.domElement);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.5 : 1.75));
+  renderer.toneMapping = NeutralToneMapping;
+  stage.appendChild(renderer.domElement);
 
   const scene = new Scene();
-  const pmrem = new PMREMGenerator(renderer);
-  const environment = pmrem.fromScene(new RoomEnvironment(), 0.04);
-  scene.environment = environment.texture;
+  const reflection = makeSkyReflection(renderer);
+  scene.environment = reflection.texture;
 
-  const camera = new PerspectiveCamera(24, 1, 0.1, 100);
-
-  const model = buildTower(renderer, { perRib: window.innerWidth < 700 ? 8 : 12 });
+  const camera = new PerspectiveCamera(FOV, 1, 0.1, 100);
+  const model = buildTower(renderer, { perRib: small ? 8 : 12 });
   const { tower } = model;
   scene.add(tower);
 
-  // Thin gold star outlines turning slowly behind the dome.
-  const halo = new Group();
-  halo.position.set(0, 0.62, -1.5);
-  scene.add(halo);
-  const loops = [
-    { radius: 1.55, opacity: 0.55, speed: 0.05 },
-    { radius: 2.05, opacity: 0.3, speed: -0.035 },
-    { radius: 2.6, opacity: 0.16, speed: 0.022 },
-  ].map(({ radius, opacity, speed }) => {
-    const loop = new LineLoop(
-      new BufferGeometry().setFromPoints(starPoints(radius)),
-      new LineBasicMaterial({ color: 0xe0b450, transparent: true, opacity }),
-    );
-    halo.add(loop);
-    return { loop, opacity, speed };
-  });
-
-  const starCount = 900;
-  const starPositions = new Float32Array(starCount * 3);
-  for (let i = 0; i < starCount; i++) {
-    starPositions.set([(Math.random() * 2 - 1) * 16, Math.random() * 20 - 8, -4 - Math.random() * 6], i * 3);
-  }
-  const stars = new Points(
-    new BufferGeometry().setAttribute('position', new BufferAttribute(starPositions, 3)),
-    new PointsMaterial({ color: 0xffffff, size: 0.026, transparent: true, opacity: 0.75, depthWrite: false }),
-  );
+  const stars = makeStars();
   scene.add(stars);
 
-  const key = new DirectionalLight(0xffe2b8, 2.6);
-  scene.add(key);
-  const restingRim = new Color(0x7aa2ff);
-  const rim = new DirectionalLight(restingRim.clone(), 2);
-  rim.position.set(6, 3, -4);
-  scene.add(rim);
-  const glint = new PointLight(0xffd39a, 8, 0, 2);
-  scene.add(glint);
+  const lights = [
+    makeLight(scene, NIGHT.key, DAY.key),
+    makeLight(scene, NIGHT.fill, DAY.fill),
+    makeLight(scene, NIGHT.rim, DAY.rim),
+  ];
 
-  // The gallery tints the light behind the dome to match the project showing.
-  const accent = new Color(0x37b3b0);
-  const accentTarget = accent.clone();
-  const galleryGlow = document.querySelector('.carousel')?.style.getPropertyValue('--glow');
-  if (galleryGlow) {
-    accent.set(galleryGlow);
-    accentTarget.set(galleryGlow);
-  }
-  const onAccent = (event) => accentTarget.set(event.detail);
-  window.addEventListener('dome:accent', onAccent);
+  // Where the camera starts, set from the page layout, and where it ends:
+  // close enough that the glazed tiles fill the whole screen.
+  const start = { x: 0, y: 0, z: 10 };
+  const end = { x: 0.34, y: 0.86, z: 3.05, lookX: 0.5, lookY: 0.8, roll: 0.3 };
 
-  let shots = shotsFor(1, 1);
-  let stops = [];
-  const remeasure = () => {
-    stops = measureSections();
-  };
+  const content = document.querySelector('.after-hero');
+  let travel = 1;
 
-  const view = { halfW: 1, halfH: 1 };
-  const resize = () => {
-    const width = host.clientWidth;
-    const height = host.clientHeight;
+  const measure = () => {
+    const width = stage.clientWidth;
+    const height = stage.clientHeight;
     if (!width || !height) return;
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    shots = shotsFor(width, height);
-    view.halfH = (height / frameFor(width, height).scale) / 2;
-    view.halfW = view.halfH * camera.aspect;
-    remeasure();
-  };
-  const stageObserver = new ResizeObserver(resize);
-  stageObserver.observe(host);
-  resize();
 
-  // The page changes height when images load or a skill opens.
-  const pageObserver = new ResizeObserver(remeasure);
+    const host = stage.getBoundingClientRect();
+    const box = slot.getBoundingClientRect();
+    const unit = box.width / FRAME.width;
+    start.z = height / unit / (2 * Math.tan((FOV * Math.PI) / 360));
+    start.x = (width / 2 - (box.left - host.left + box.width / 2)) / unit;
+    start.y = FRAME.top - (height / 2 - (box.top - host.top)) / unit;
+    travel = Math.max(1, content.getBoundingClientRect().top + window.scrollY);
+  };
+  const stageObserver = new ResizeObserver(measure);
+  stageObserver.observe(stage);
+  const pageObserver = new ResizeObserver(measure);
   pageObserver.observe(document.body);
+  measure();
 
   const target = { x: 0, y: 0 };
   const pointer = { x: 0, y: 0 };
@@ -200,63 +157,52 @@ export function mountDomeScene(host, { onReady }) {
   };
   window.addEventListener('pointermove', onPointerMove, { passive: true });
 
+  const root = document.documentElement;
+  let daylight = root.dataset.theme === 'light' ? 1 : 0;
   let scroll = window.scrollY;
-  let startedAt = null;
+  let turning = 0;
   let lastFrame = null;
   let announced = false;
+
   const frame = (now) => {
     if (document.hidden) {
       lastFrame = null;
       return;
     }
-
-    startedAt ??= now;
-    const time = (now - startedAt) / 1000;
     const delta = lastFrame === null ? 0 : Math.min(0.5, (now - lastFrame) / 1000);
     lastFrame = now;
 
     // Eases toward the target at the same speed on fast and slow screens.
     const ease = (rate) => 1 - Math.exp(-rate * delta);
-    scroll += (window.scrollY - scroll) * ease(6.5);
+    scroll += (window.scrollY - scroll) * ease(9);
+    const progress = clamp01(scroll / travel);
+    if (progress >= 1 && announced) return; // Fully covered by the page.
+
     pointer.x += (target.x - pointer.x) * ease(3.6);
     pointer.y += (target.y - pointer.y) * ease(3.6);
+    daylight += ((root.dataset.theme === 'light' ? 1 : 0) - daylight) * ease(5);
+    turning += delta;
 
-    const shot = shotAt(scroll, stops, shots);
+    const t = smoother(progress);
+    const drift = 1 - t;
+    camera.position.set(
+      lerp(start.x, end.x, t) + pointer.x * 0.1 * drift,
+      lerp(start.y, end.y, t) + pointer.y * 0.06 * drift,
+      lerp(start.z, end.z, t),
+    );
+    camera.up.set(Math.sin(end.roll * t), Math.cos(end.roll * t), 0);
+    camera.lookAt(lerp(start.x, end.lookX, t), lerp(start.y, end.lookY, t), 0);
 
-    camera.position.set(shot.x + pointer.x * 0.12, shot.y + pointer.y * 0.08, shot.z);
-    camera.up.set(Math.sin(shot.roll), Math.cos(shot.roll), 0);
-    camera.lookAt(shot.lookX, shot.lookY, 0);
-    if (Math.abs(camera.fov - shot.fov) > 0.001) {
-      camera.fov = shot.fov;
-      camera.updateProjectionMatrix();
-    }
+    tower.rotation.y = -turning * 0.1 - progress * 0.9 + pointer.x * 0.16 * drift;
 
-    // The dome turns so the lettering travels in reading direction.
-    tower.rotation.y = -time * 0.13 - scroll * 0.0011 + pointer.x * 0.24;
-    tower.rotation.x = 0.03 - pointer.y * 0.05;
+    lights.forEach((apply) => apply(daylight));
+    scene.environmentIntensity = lerp(NIGHT.sky, DAY.sky, daylight);
 
-    key.position.set(shot.keyX, shot.keyY, shot.keyZ);
-    key.intensity = shot.key;
-    rim.intensity = shot.rim;
-    accent.lerp(accentTarget, ease(3));
-    rim.color.copy(restingRim).lerp(accent, shot.accent);
-    scene.environmentIntensity = shot.env;
+    stars.visible = daylight < 0.98;
+    stars.material.opacity = 0.7 * (1 - daylight);
 
-    glint.position.set(shot.x + pointer.x * view.halfW, shot.y + pointer.y * view.halfH * 0.7, 3.2);
-    glint.intensity = 8 * shot.halo;
-
-    halo.visible = shot.halo > 0.01;
-    loops.forEach(({ loop, opacity, speed }) => {
-      loop.rotation.z = time * speed + scroll * speed * 0.004;
-      loop.material.opacity = opacity * shot.halo;
-    });
-    halo.position.x = pointer.x * 0.14;
-
-    stars.position.x = -pointer.x * 0.2;
-    stars.position.y = -pointer.y * 0.12;
-
-    host.style.setProperty('--dim', shot.dim.toFixed(3));
-    host.style.setProperty('--foot', shot.foot.toFixed(3));
+    pin.style.setProperty('--p', progress.toFixed(4));
+    pin.classList.toggle('is-covered', progress > 0.5);
 
     renderer.render(scene, camera);
     if (!announced) {
@@ -271,16 +217,10 @@ export function mountDomeScene(host, { onReady }) {
     stageObserver.disconnect();
     pageObserver.disconnect();
     window.removeEventListener('pointermove', onPointerMove);
-    window.removeEventListener('dome:accent', onAccent);
     model.dispose();
-    halo.traverse((object) => {
-      object.geometry?.dispose();
-      object.material?.dispose();
-    });
     stars.geometry.dispose();
     stars.material.dispose();
-    environment.dispose();
-    pmrem.dispose();
+    reflection.dispose();
     renderer.dispose();
     renderer.domElement.remove();
   };

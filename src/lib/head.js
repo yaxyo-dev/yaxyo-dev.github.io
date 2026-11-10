@@ -40,7 +40,7 @@ const personJsonLd = () =>
     url: `${SITE_URL}/`,
     jobTitle: 'Junior Engineer',
     address: { '@type': 'PostalAddress', addressLocality: 'Samarkand', addressCountry: 'UZ' },
-    sameAs: [profile.github.url, profile.linkedin.url, profile.telegram.url],
+    sameAs: [profile.github.url, profile.linkedin.url, profile.telegram.url, profile.instagram.url],
   }).replace(/</g, '\\u003c');
 
 /** The <head> tags for one prerendered page. */

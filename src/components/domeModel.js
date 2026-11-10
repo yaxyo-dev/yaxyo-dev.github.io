@@ -1,5 +1,5 @@
-// The dome itself: a ribbed, tiled shell in the style of Samarkand's Timurid
-// architecture, on a drum with your name running around it in brick lettering.
+// The dome: a ribbed shell of hand-glazed tile in the style of Samarkand's
+// Timurid architecture, on a drum with a band of pointed arches.
 import {
   BufferAttribute,
   BufferGeometry,
@@ -17,7 +17,6 @@ import {
   Vector2,
   Vector3,
 } from 'three';
-import { GLYPHS } from '../lib/glyphs';
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const smoothstep = (a, b, x) => {
@@ -25,11 +24,15 @@ const smoothstep = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 
-export const DOME_HEIGHT = 1.68;
-
-const RIBS = 28;
+const DOME_HEIGHT = 1.68;
+const FINIAL_TOP = DOME_HEIGHT + 0.39;
+const RIBS = 36;
 const DRUM_RADIUS = 0.8;
 const DRUM_HEIGHT = 0.66;
+
+// The box that both the live camera and the still image frame: from the tip
+// of the finial to the foot of the drum, a little wider than the dome.
+export const FRAME = { top: FINIAL_TOP, bottom: -DRUM_HEIGHT, width: 2.3 };
 
 // Radius and height along the dome, from the drum up to the tip. The full
 // shoulders and rounded crown follow the melon domes of Samarkand.
@@ -49,16 +52,17 @@ function buildDomeGeometry(perRib) {
 
   for (let j = 0; j <= rings; j++) {
     const t = j / rings;
-    const depth = 0.09 * smoothstep(0, 0.1, t) * (1 - smoothstep(0.7, 1, t));
+    const depth = 0.075 * smoothstep(0, 0.1, t) * (1 - smoothstep(0.72, 1, t));
     for (let i = 0; i <= around; i++) {
       const theta = (i / around) * Math.PI * 2;
       const lobe = Math.abs(Math.cos((theta * RIBS) / 2)) ** 0.6;
       const radius = outline[j].x * (1 - depth + depth * lobe);
       const k = j * (around + 1) + i;
       positions.set([radius * Math.cos(theta), outline[j].y, radius * Math.sin(theta)], k * 3);
-      uvs.set([(i / around) * RIBS + 0.5, t], k * 2); // Centres the pattern on each rib.
+      // The texture is two ribs wide. The quarter step centres its pattern on a rib.
+      uvs.set([(i / around) * (RIBS / 2) + 0.25, t], k * 2);
       // Darken the grooves between ribs, so the shape reads even in soft light.
-      const shade = 1 - (1 - lobe) * 0.62 * smoothstep(0, 0.1, t);
+      const shade = 1 - (1 - lobe) * 0.55 * smoothstep(0, 0.1, t);
       colors.set([shade, shade, shade], k * 3);
     }
   }
@@ -101,105 +105,156 @@ const makeCanvas = (width, height) => {
   return [canvas, canvas.getContext('2d')];
 };
 
-function diamond(g, x, y, size, color) {
+function lozenge(g, x, y, halfWidth, halfHeight, color) {
   g.fillStyle = color;
   g.beginPath();
-  g.moveTo(x, y - size);
-  g.lineTo(x + size, y);
-  g.lineTo(x, y + size);
-  g.lineTo(x - size, y);
+  g.moveTo(x, y - halfHeight);
+  g.lineTo(x + halfWidth, y);
+  g.lineTo(x, y + halfHeight);
+  g.lineTo(x - halfWidth, y);
   g.closePath();
   g.fill();
 }
 
-// One rib of glazed tiles, with a chain of diamonds running up its centre.
-function drawRib(scale) {
-  const [canvas, g] = makeCanvas(256 * scale, 2048 * scale);
-  g.scale(scale, scale);
-  const size = 32;
-  const shades = ['#17a4a8', '#1cabad', '#139ca2', '#22b2b2'];
-  g.fillStyle = '#0c6c75';
-  g.fillRect(0, 0, 256, 2048);
-  for (let row = 0; row < 64; row++) {
-    for (let col = 0; col < 8; col++) {
-      g.fillStyle = shades[(col * 7 + row * 13 + ((col * row) % 3)) % 4];
-      g.fillRect(col * size + 2, row * size + 2, size - 4, size - 4);
-    }
-  }
-  for (let y = 80; y < 2048; y += 192) {
-    diamond(g, 128, y, 48, '#f3eee3');
-    diamond(g, 128, y, 38, '#163a8f');
-    diamond(g, 128, y, 16, '#e0b450');
-  }
-  return canvas;
+// A repeatable random sequence, so every visitor sees the same dome.
+function seeded(start) {
+  let seed = start;
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-// The band around the drum: your name in square brick lettering, three times round.
-function drawDrum() {
-  const word = [...'YAXYO'].map((letter) => GLYPHS[letter]);
-  const letters = word.reduce((sum, glyph) => sum + glyph[0].length, 0) + (word.length - 1) * 2;
-  const repeat = letters + 9;
-  const cell = 25;
-  const rows = 21;
-  const [canvas, g] = makeCanvas(repeat * 3 * cell, rows * cell);
+// Two ribs of glazed tile. Each tile differs a little in colour and shine, the
+// way hand-fired glaze does, and the diamonds step up the ribs in a diagonal net.
+// `surface` holds how raised (red) and how rough (green) each spot is.
+function drawTiles(scale) {
+  const width = 512;
+  const height = 2048;
+  const [colorCanvas, color] = makeCanvas(width * scale, height * scale);
+  const [surfaceCanvas, surface] = makeCanvas(width * scale, height * scale);
+  color.scale(scale, scale);
+  surface.scale(scale, scale);
 
-  g.fillStyle = '#0b2257';
-  g.fillRect(0, 0, canvas.width, canvas.height);
-  const brick = (col, row, color) => {
-    g.fillStyle = color;
-    g.fillRect(col * cell + 1.5, row * cell + 1.5, cell - 3, cell - 3);
-  };
+  color.fillStyle = '#0a676f';
+  color.fillRect(0, 0, width, height);
+  surface.fillStyle = 'rgb(0, 215, 0)';
+  surface.fillRect(0, 0, width, height);
 
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < repeat * 3; col++) {
-      brick(col, row, (col + row) % 2 ? '#12306f' : '#102a63');
+  const random = seeded(19);
+  const tile = width / 14;
+  const inset = 1.1;
+  for (let row = 0; row < Math.ceil(height / tile); row++) {
+    for (let col = 0; col < 14; col++) {
+      const x = col * tile + inset;
+      const y = row * tile + inset;
+      const size = tile - inset * 2;
+      color.fillStyle = `hsl(${176 + random() * 11} ${66 + random() * 20}% ${32 + random() * 11}%)`;
+      color.fillRect(x, y, size, size);
+      surface.fillStyle = `rgb(255, ${Math.round(38 + random() * 70)}, 0)`;
+      surface.fillRect(x, y, size, size);
     }
   }
 
-  for (let col = 0; col < repeat * 3; col++) {
-    [0, 20].forEach((row) => brick(col, row, '#f3eee3'));
-    [2, 18].forEach((row) => brick(col, row, col % 2 ? '#17a4a8' : '#22b2b2'));
-    [4, 16].forEach((row) => brick(col, row, col % 4 === 0 ? '#e0b450' : '#0b2257'));
-  }
+  [0, 1].forEach((rib) => {
+    const x = 128 + rib * 256;
+    for (let y = rib ? 148 : 60; y < height; y += 176) {
+      if (y < 320) continue; // The crown stays plain, where the ribs run together.
+      lozenge(color, x, y, 29, 45, '#f3eee3');
+      lozenge(color, x, y, 24, 38, '#14307f');
+      lozenge(color, x, y, 9, 15, '#e0b450');
+      lozenge(surface, x, y, 29, 45, 'rgb(255, 46, 0)');
+    }
+  });
 
-  for (let r = 0; r < 3; r++) {
-    let col = r * repeat + 4;
-    word.forEach((glyph) => {
-      glyph.forEach((line, y) => {
-        [...line].forEach((mark, x) => {
-          if (mark === '#') brick(col + x, 7 + y, '#f3eee3');
-        });
-      });
-      col += glyph[0].length + 2;
-    });
-    const star = cell * 2.6;
-    const cx = (r * repeat + 4 + letters + 4.5) * cell;
-    const cy = 10.5 * cell;
-    diamond(g, cx, cy, star, '#e0b450');
-    g.save();
-    g.translate(cx, cy);
-    g.rotate(Math.PI / 4);
-    diamond(g, 0, 0, star, '#e0b450');
-    g.restore();
-    diamond(g, cx, cy, star * 0.42, '#0b2257');
-  }
+  return { color: colorCanvas, surface: surfaceCanvas };
+}
+
+// One bay of the band around the drum: a pointed arch between two tiled friezes.
+function drawArcade() {
+  const width = 256;
+  const height = 640;
+  const [canvas, g] = makeCanvas(width * 2, height * 2);
+  g.scale(2, 2);
+
+  g.fillStyle = '#0e2768';
+  g.fillRect(0, 0, width, height);
+
+  const frieze = (top) => {
+    g.fillStyle = '#e0b450';
+    g.fillRect(0, top, width, 4);
+    g.fillRect(0, top + 46, width, 4);
+    for (let x = 0; x < width; x += 32) {
+      g.fillStyle = x % 64 ? '#16a2a6' : '#20b1b1';
+      g.fillRect(x + 1.5, top + 8, 29, 34);
+      lozenge(g, x + 16, top + 25, 9, 13, '#f3eee3');
+    }
+  };
+  frieze(6);
+  frieze(height - 56);
+
+  const arch = (inset, color) => {
+    const left = 34 + inset;
+    const right = width - 34 - inset;
+    const mid = width / 2;
+    const apex = 92 + inset * 1.5;
+    const spring = 306;
+    const base = height - 74;
+    g.fillStyle = color;
+    g.beginPath();
+    g.moveTo(left, base);
+    g.lineTo(left, spring);
+    g.bezierCurveTo(left, spring - 124, mid - 24, apex + 70, mid, apex);
+    g.bezierCurveTo(mid + 24, apex + 70, right, spring - 124, right, spring);
+    g.lineTo(right, base);
+    g.closePath();
+    g.fill();
+  };
+  arch(0, '#f3eee3');
+  arch(7, '#17a4a8');
+  arch(20, '#0a1f57');
+
+  lozenge(g, width / 2, 360, 30, 56, '#e0b450');
+  lozenge(g, width / 2, 360, 19, 38, '#0a1f57');
+  lozenge(g, width / 2, 360, 7, 14, '#f3eee3');
+
+  [0, width].forEach((x) => {
+    lozenge(g, x, 150, 22, 32, '#e0b450');
+    lozenge(g, x, 150, 12, 19, '#0a1f57');
+  });
+
   return canvas;
 }
 
 export function buildTower(renderer, { perRib = 12, textureScale = 1 } = {}) {
-  const sharpen = (texture) => {
-    texture.colorSpace = SRGBColorSpace;
+  const prepare = (texture) => {
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     texture.wrapS = RepeatWrapping;
     return texture;
   };
-  const ribMap = sharpen(new CanvasTexture(drawRib(textureScale)));
-  const drumMap = sharpen(new CanvasTexture(drawDrum()));
+  const tiles = drawTiles(textureScale);
+  const tileMap = prepare(new CanvasTexture(tiles.color));
+  tileMap.colorSpace = SRGBColorSpace;
+  const tileSurface = prepare(new CanvasTexture(tiles.surface));
+  const arcadeMap = prepare(new CanvasTexture(drawArcade()));
+  arcadeMap.colorSpace = SRGBColorSpace;
+  arcadeMap.repeat.x = 18;
 
-  const domeMaterial = new MeshPhysicalMaterial({ map: ribMap, vertexColors: true, roughness: 0.36, clearcoat: 0.9, clearcoatRoughness: 0.18 });
-  const drumMaterial = new MeshPhysicalMaterial({ map: drumMap, roughness: 0.44, clearcoat: 0.6, clearcoatRoughness: 0.25 });
-  const wallMaterial = new MeshStandardMaterial({ color: 0x10264f, roughness: 0.85 });
-  const goldMaterial = new MeshStandardMaterial({ color: 0xe0b450, metalness: 1, roughness: 0.26, envMapIntensity: 2.4 });
+  const domeMaterial = new MeshPhysicalMaterial({
+    map: tileMap,
+    vertexColors: true,
+    roughnessMap: tileSurface,
+    roughness: 1,
+    bumpMap: tileSurface,
+    bumpScale: 0.7,
+    clearcoat: 0.75,
+    clearcoatRoughness: 0.16,
+  });
+  const drumMaterial = new MeshPhysicalMaterial({ map: arcadeMap, roughness: 0.46, clearcoat: 0.5, clearcoatRoughness: 0.26 });
+  const wallMaterial = new MeshStandardMaterial({ color: 0x0c2159, roughness: 0.85 });
+  const goldMaterial = new MeshStandardMaterial({ color: 0xe0b450, metalness: 1, roughness: 0.28, envMapIntensity: 1.6 });
 
   const tower = new Group();
   tower.add(new Mesh(buildDomeGeometry(perRib), domeMaterial));
@@ -212,7 +267,7 @@ export function buildTower(renderer, { perRib = 12, textureScale = 1 } = {}) {
   wall.position.y = -DRUM_HEIGHT - 1.5;
   tower.add(wall);
 
-  const ringGeometry = new TorusGeometry(DRUM_RADIUS + 0.012, 0.024, 14, 200);
+  const ringGeometry = new TorusGeometry(DRUM_RADIUS + 0.012, 0.022, 14, 200);
   [0, -DRUM_HEIGHT].forEach((y) => {
     const ring = new Mesh(ringGeometry, goldMaterial);
     ring.rotation.x = Math.PI / 2;
@@ -239,8 +294,9 @@ export function buildTower(renderer, { perRib = 12, textureScale = 1 } = {}) {
         object.geometry?.dispose();
         object.material?.dispose();
       });
-      ribMap.dispose();
-      drumMap.dispose();
+      tileMap.dispose();
+      tileSurface.dispose();
+      arcadeMap.dispose();
     },
   };
 }
