@@ -2,7 +2,8 @@ import { profile } from '../content/profile';
 import { ui } from '../content/ui';
 
 // While this section is on screen the camera holds a close-up of the dome.
-// On large screens the text stays pinned as you scroll past it.
+// On large screens the text stays pinned as you scroll past it, with your
+// portrait standing in its own column beside it.
 export default function AboutStage({ lang }) {
   const t = ui[lang].about;
   return (
@@ -11,7 +12,7 @@ export default function AboutStage({ lang }) {
         <div className="about-panel wrap">
           <h2 className="display about-title" data-reveal>{t.title}</h2>
           {profile.photo && (
-            <img className="about-photo" src={profile.photo} alt={t.photoAlt} width="480" height="480" loading="lazy" decoding="async" />
+            <img className="about-photo" src={profile.photo} alt={t.photoAlt} width="800" height="1000" loading="lazy" decoding="async" data-reveal />
           )}
           <div className="about-text" data-reveal>
             {t.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}

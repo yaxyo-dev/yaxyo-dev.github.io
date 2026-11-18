@@ -749,7 +749,30 @@ html:not(.js) .about, html[data-scene='static'] .about { background: url('/about
 .about-panel { position: relative; display: grid; gap: clamp(18px, 2.6vw, 32px); justify-items: start; }
 .about-title { font-size: clamp(2.5rem, 7.4vw, 7.5rem); }
 
-.about-photo { width: 96px; height: 96px; object-fit: cover; border-radius: 12px; }
+/* Your portrait: a tall photo under the title on narrow screens,
+   and a column of its own beside the text on wide ones. */
+.about-photo {
+  width: min(100%, 360px);
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 40px 70px -30px rgb(0 0 0 / 0.6), 0 0 0 1px var(--rule);
+}
+
+@media (min-width: 901px) {
+  .about-panel:has(.about-photo) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: clamp(40px, 6vw, 112px);
+  }
+  .about-panel:has(.about-photo) .about-title { font-size: clamp(2.5rem, 6.2vw, 6.75rem); }
+  .about-photo {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    width: clamp(220px, 24vw, 380px);
+  }
+}
 
 .about-text {
   display: grid;

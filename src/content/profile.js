@@ -13,7 +13,7 @@ export const profile = {
   linkedin: { handle: 'LinkedIn', url: 'https://www.linkedin.com/in/yaxyo-undefined-425b93439' },
   instagram: { handle: '@nigmatov_yaxyo', url: 'https://www.instagram.com/nigmatov_yaxyo/' },
 
-  // Optional portrait for the About section. Put a square image in public/
-  // and set this to its path, for example '/portrait.jpg'.
-  photo: '',
+  // Optional portrait for the About section. Put a tall photo (4:5, for
+  // example 800×1000) in public/ and set this to its path.
+  photo: '/portrait.webp',
 };
