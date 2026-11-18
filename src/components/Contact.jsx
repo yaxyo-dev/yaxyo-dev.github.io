@@ -1,45 +1,43 @@
-import { ArrowUpRight } from './Icons';
+import { FaEnvelope, FaGithub, FaInstagram, FaLinkedin, FaTelegram } from 'react-icons/fa6';
 import { profile } from '../content/profile';
 import { ui } from '../content/ui';
 
 export default function Contact({ lang }) {
   const t = ui[lang];
   const links = [
-    { href: profile.telegram.url, name: 'Telegram', detail: profile.telegram.handle, external: true },
-    { href: profile.instagram.url, name: 'Instagram', detail: profile.instagram.handle, external: true },
-    { href: `mailto:${profile.email}`, name: t.contact.email, detail: profile.email },
-    { href: profile.github.url, name: 'GitHub', detail: profile.github.handle, external: true },
-    { href: profile.linkedin.url, name: 'LinkedIn', detail: profile.name, external: true },
+    { href: profile.telegram.url, icon: <FaTelegram />, label: `Telegram: ${profile.telegram.handle}`, external: true, main: true },
+    { href: profile.instagram.url, icon: <FaInstagram />, label: `Instagram: ${profile.instagram.handle}`, external: true },
+    { href: `mailto:${profile.email}`, icon: <FaEnvelope />, label: `${t.contact.email}: ${profile.email}` },
+    { href: profile.github.url, icon: <FaGithub />, label: `GitHub: ${profile.github.handle}`, external: true },
+    { href: profile.linkedin.url, icon: <FaLinkedin />, label: 'LinkedIn', external: true },
   ];
 
   return (
-    <section id="contact" className="contact">
-      <div className="wrap contact-inner">
-        <h2 className="sr-only">{t.contact.title}</h2>
-        <div className="contact-words display" aria-hidden="true" data-reveal="salom">
-          {t.contact.before && <span className="contact-word">{t.contact.before}</span>}
-          <span className="salom">
-            {[...'Salom'].map((letter, i) => (
-              <span className="salom-mask" key={letter}><span style={{ '--i': i }}>{letter}</span></span>
-            ))}
-          </span>
-          {t.contact.after && <span className="contact-word">{t.contact.after}</span>}
-        </div>
-        <p className="contact-lede" data-reveal>{t.contact.lede}</p>
+    <section id="contact" className="contact" data-shot="contact">
+      <div className="wrap">
+        <h2 className="contact-title" data-reveal>
+          <span className="sr-only">{t.contact.title}</span>
+          {t.contact.before && <span className="display contact-word" aria-hidden="true">{t.contact.before}</span>}
+          <span className="display contact-salom dome-fill" aria-hidden="true">Salom</span>
+          {t.contact.after && <span className="display contact-word" aria-hidden="true">{t.contact.after}</span>}
+        </h2>
+        <p className="contact-lede">{t.contact.lede}</p>
         <ul className="contact-links">
-          {links.map((link, i) => (
-            <li key={link.name} data-reveal style={{ '--i': i }}>
-              <a href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
-                <span className="contact-name display">{link.name}</span>
-                <span className="contact-detail">{link.detail}</span>
-                <ArrowUpRight />
+          {links.map((link) => (
+            <li key={link.label}>
+              <a
+                className={`pill${link.main ? ' pill-solid' : ''}`}
+                href={link.href}
+                {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                <span aria-hidden="true">{link.icon}</span> {link.label}
               </a>
             </li>
           ))}
         </ul>
         <footer className="site-footer">
-          <span>© 2026 {profile.name}</span>
-          <span>{t.place}</span>
+          <span>© {profile.name}</span>
+          <span>{t.footer}</span>
         </footer>
       </div>
     </section>

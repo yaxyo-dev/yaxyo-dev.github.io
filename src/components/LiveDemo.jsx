@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUpRight, Close, Play } from './Icons';
+import { FaArrowUpRightFromSquare, FaPlay, FaXmark } from 'react-icons/fa6';
 
 // Shows a screenshot first. The real page only loads when someone asks for it,
 // which keeps the case study fast and stops the frame from hijacking scrolling.
@@ -17,16 +17,16 @@ export default function LiveDemo({ src, poster, posterAlt, title, labels }) {
       </div>
       <div className="live-actions">
         {live ? (
-          <button type="button" className="button" onClick={() => setLive(false)}>
-            <Close /> {labels.closeLive}
+          <button type="button" className="live-button" onClick={() => setLive(false)}>
+            <FaXmark aria-hidden="true" /> {labels.closeLive}
           </button>
         ) : (
-          <button type="button" className="button" onClick={() => setLive(true)}>
-            <Play /> {labels.try}
+          <button type="button" className="live-button" onClick={() => setLive(true)}>
+            <FaPlay aria-hidden="true" /> {labels.try}
           </button>
         )}
-        <a className="text-link" href={src} target="_blank" rel="noopener noreferrer">
-          {labels.open} <ArrowUpRight />
+        <a className="live-open" href={src} target="_blank" rel="noopener noreferrer">
+          {labels.open} <FaArrowUpRightFromSquare aria-hidden="true" />
         </a>
       </div>
     </div>
